@@ -4,56 +4,194 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>Fade Puzzle</title>
+  <title>Flying Machines</title>
   <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+
+  <style>
+    html {
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      height: 100%;
+      overflow: hidden;
+
+    }
+  </style>
   <script>
     $(function() {
 
-      // All information gathered and stored
-      var name
-      var primaryc
-      var backdrop
-      var machine
+
+
+      var canvas
+      var img
+      var context
+      var imgData
+
+      $(".info").css({ "position": "absolute", "top": "50%", "left": "50%", "transform": "translate(-50%,-50%)" })
+
+      $("input:submit").click(function() {
+        // Menu disappears
+        $(".info").fadeOut(1000)
+
+        // All information gathered and stored
+        var name = $("#name").val()
+        var backdrop = $(".bd input:checked").val()
+        var machine = $(".mtype input:checked").val()
+        var primaryc = $("#colors").val()
+  
+
+
+        $("canvas").css({ "position": "absolute", "top": "50%", "left": "50%", "transform": "translate(-50%,-50%)" })
+
+        console.log(backdrop)
+
+        if (backdrop == "clouds") {
+          $("html, body").css("background-image", "url(backgrounds/sky.png)")
+        }
+        if (backdrop == "moon") {
+          $("html, body").css("background-image", "url(backgrounds/moon.png)")
+        }
+        if (backdrop == "forest") {
+          $("html, body").css("background-image", "url(backgrounds/forest.png)")
+        }
+        
+
+
+        $("#machinename").html(name).css({ "position": "absolute", "left": "50%", "top": "70%", "transform": "translate(-50%,-20%", "color": primaryc, "font-family": "Courier New" })
+
+
+
+
+
+
+
+        //Convert color to rgb to easily change pixel data of image
+        function hex2rgb(hex) {
+          return ['0x' + hex[1] + hex[2] | 0, '0x' + hex[3] + hex[4] | 0, '0x' + hex[5] + hex[6] | 0];
+        }
+
+        // Store rgb data
+        var primarycrgb = hex2rgb(primaryc)
+
+
+
+        // Set up a new image and a canvas
+        img = new Image(200, 200);
+        canvas = document.getElementById('myCanvas');
+        ctx = canvas.getContext('2d');
+
+
+        img.onload = function() {
+          // When img is created, draw the image on the canvas
+          canvas.width = img.width
+          canvas.height = img.height
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Collect all the rgb values of the pixels in the image
+          imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+
+
+          for (i = 0; i < imgData.data.length; i += 4) {
+            // If the rgb values of the pixels are less than 255, change it to the user's selected rgb 
+            if (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2] < 255) {
+              imgData.data[i] = primarycrgb[0]
+              imgData.data[i + 1] = primarycrgb[1]
+              imgData.data[i + 2] = primarycrgb[2]
+
+            }
+          }
+
+          // Displays the new image w/ color
+          ctx.putImageData(imgData, 0, 0)
+
+        };
+
+
+
+        //Testing image for data
+        // img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOwAAADWCAMAAADl7J7tAAAAA1BMVEWNxj9lUej8AAAASElEQVR4nO3BMQEAAADCoPVPbQ0PoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeDcYeAAEGWge7AAAAAElFTkSuQmCC";
+
+        if (machine == "a") {
+          img.src = "machines/airplane.png";
+        }
+        else if (machine == "b") {
+          img.src = "machines/balloon.png";
+        }
+        else {
+          img.src = "machines/jet.png"
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+      })
+
+
     })
   </script>
+
+
 </head>
 
 <body>
-  <h1>Flying Machine Generator</h1>
+  <h1 id="machinename"></h1>
+  <div class="info">
+    <!--Start-->
 
-  What should the name of your machine be?
-  <br>
-  <input id="name">
-  <br><br> What type of flying machine?
-  <br>
+    <h1>Flying Machine Generator</h1>
 
-  <div class="mtype">
-    <input type="radio" name="machine" / value="a"> Airplane
+    What should the name of your machine be?
     <br>
-    <input type="radio" name="machine" / value="b"> Hot Air Balloon
+    <input id="name">
+    <br><br> What type of flying machine?
     <br>
-    <input type="radio" name="machine" / value="j"> Jet
+
+    <div class="mtype">
+      <input type="radio" name="machine" value="a" checked> Airplane
+      <br>
+      <input type="radio" name="machine" value="b"> Hot Air Balloon
+      <br>
+      <input type="radio" name="machine" value="j"> Jet
+      <br><br>
+    </div>
+
+    What should the color of your machine be?
+    <br>
+    <input type="color" id="colors" value="#ff0000" />
     <br><br>
+
+    <div class="bd">
+      Choose a backdrop!
+      <br>
+      <input type="radio" name="background" value="forest"> The Forest
+      <br>
+      <input type="radio" name="background" value="clouds"> In the Clouds
+      <br>
+      <input type="radio" name="background" value="moon"> The Moons
+    </div>
+
+    
+    <br>
+
+    <input type="submit">
+
+    <!--End-->
   </div>
 
-  What should the color of your machine be?
-  <br>
-  <input type="color" />
-  <br><br>
 
-  <div class="bd">
-    Choose a backdrop!
-    <br>
-    <input type="radio" name="background" / value="forest"> The Forest
-    <br>
-    <input type="radio" name="background" / value="clouds"> In the Clouds
-    <br>
-    <input type="radio" name="background" / value="moon"> The Moons
-  </div>
-  
-  <br>
-  
-  <input type="submit">
+
+  <canvas id="myCanvas"></canvas>
+
 </body>
 
 </html>
